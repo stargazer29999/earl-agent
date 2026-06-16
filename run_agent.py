@@ -5418,7 +5418,11 @@ def main(
     if not model and agent.base_url:
         import requests
         try:
-            resp = requests.get(f"{agent.base_url.rstrip('/')}/models", timeout=5)
+            headers = {}
+            if getattr(agent, "api_key", None):
+                headers["Authorization"] = f"Bearer {agent.api_key}"
+            
+            resp = requests.get(f"{agent.base_url.rstrip('/')}/models", headers=headers, timeout=5)
             if resp.status_code == 200:
                 data = resp.json()
                 models = data.get("data", [])
@@ -5442,6 +5446,8 @@ def main(
                         except (KeyboardInterrupt, EOFError):
                             print("\nAborted.")
                             import sys; sys.exit(1)
+            else:
+                print(f"⚠️ Could not fetch models (HTTP {resp.status_code}): {resp.text[:200]}")
         except Exception as e:
             print(f"⚠️ Could not fetch models from {agent.base_url}: {e}")
     
