@@ -5443,7 +5443,7 @@ def main(
                 log_prefix_chars=log_prefix_chars
             )
         session_id = str(uuid.uuid4())
-        orch = Orchestrator(factory, agent.state_db)
+        orch = Orchestrator(factory, getattr(agent, '_session_db', None))
         final_res = orch.handle_request(user_query, session_id)
         result = {
             "completed": True,
