@@ -5451,12 +5451,17 @@ def main(
         except Exception as e:
             print(f"⚠️ Could not fetch models from {agent.base_url}: {e}")
     
-    # Use provided query or default to Python 3.13 example
+    # Use provided query or prompt the user if none was provided
     if query is None:
-        user_query = (
-            "Tell me about the latest developments in Python 3.13 and what new features "
-            "developers should know about. Please search for current information and try it out."
-        )
+        try:
+            print("\n" + "-" * 50)
+            user_query = input("💬 Enter your prompt: ").strip()
+            if not user_query:
+                print("No query provided. Exiting.")
+                import sys; sys.exit(0)
+        except (KeyboardInterrupt, EOFError):
+            print("\nAborted.")
+            import sys; sys.exit(1)
     else:
         user_query = query
     
