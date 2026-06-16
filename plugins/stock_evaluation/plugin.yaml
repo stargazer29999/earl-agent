@@ -1,0 +1,4 @@
+name: stock_evaluation
+version: 1.0.0
+description: "Generate an algorithmic stock analysis report based on fundamentals, technicals, and news sentiment."
+author: "Earl Agent Developer"
