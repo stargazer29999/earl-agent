@@ -5396,6 +5396,36 @@ def main(
         print("   - Successful conversations → trajectory_samples.jsonl")
         print("   - Failed conversations → failed_trajectories.jsonl")
     
+    # Auto-discover models and prompt user if not provided
+    if not model and base_url:
+        import requests
+        try:
+            resp = requests.get(f"{base_url.rstrip('/')}/models", timeout=5)
+            if resp.status_code == 200:
+                data = resp.json()
+                models = data.get("data", [])
+                if models:
+                    print("\n📡 Available models on endpoint:")
+                    for i, m in enumerate(models):
+                        print(f"  {i+1}. {m['id']}")
+                    while True:
+                        try:
+                            choice = input("\nSelect a model (enter number): ").strip()
+                            idx = int(choice) - 1
+                            if 0 <= idx < len(models):
+                                model = models[idx]["id"]
+                                print(f"✅ Selected model: {model}\n")
+                                break
+                            else:
+                                print("❌ Invalid selection, try again.")
+                        except ValueError:
+                            print("❌ Please enter a valid number.")
+                        except (KeyboardInterrupt, EOFError):
+                            print("\nAborted.")
+                            import sys; sys.exit(1)
+        except Exception as e:
+            print(f"⚠️ Could not fetch models from {base_url}: {e}")
+
     # Initialize agent with provided parameters
     try:
         agent = AIAgent(
